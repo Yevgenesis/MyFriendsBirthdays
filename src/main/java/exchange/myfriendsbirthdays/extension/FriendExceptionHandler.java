@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,8 +17,8 @@ public class FriendExceptionHandler {
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<Map<String, Object>> handleValidationErrors(ConstraintViolationException ex) {
-        // Убрал путь из сообщения.
-        String message = ex.getMessage().split(":")[1].trim();
+        // Достаёт сообщение ошибки без лишней инфы
+        String message = ex.getConstraintViolations().iterator().next().getMessage();
         return ResponseEntity.badRequest().body(buildErrorMap(message, HttpStatus.BAD_REQUEST));
     }
 
@@ -38,11 +38,10 @@ public class FriendExceptionHandler {
 
     private Map<String, Object> buildErrorMap(String message, HttpStatus code) {
         Map<String, Object> errors = new HashMap<>();
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        Instant timestamp = Instant.now();
         errors.put("timeStamp", timestamp.toString());
         errors.put("message", message);
         errors.put("code", code.value());
         return errors;
-
     }
 }

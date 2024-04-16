@@ -26,18 +26,11 @@ public class FriendController {
     private final FriendMapper friendMapper;
 
 
-    // Этот метод для тестового заполнения репозитория
-    // проверку по полям в нём не делал
-    @PostMapping("/addList")
-    public List<Friend> addListFriend(@RequestBody List<Friend> friendList) {
-        return friendService.addListFriend(friendList);
-    }
-
     @GetMapping
     public List<Friend> getAllFriends() {
         return friendService.getAllFriends();
-
     }
+
 
     @PostMapping
     public Friend createFriend(@RequestBody @Valid FriendDTO friendDTO, BindingResult bindingResult) {
@@ -45,14 +38,16 @@ public class FriendController {
             log.info(bindingResult.getAllErrors().toString());
         }
         Friend newFriend = friendMapper.dtoTofriend(friendDTO);
-        return friendService.addFriend(newFriend);
 
+        return friendService.addFriend(newFriend);
     }
+
 
     @GetMapping("/filter/happyBirthday")
     public List<Friend> getFriendsTodaysBirthday() {
         return friendService.getFriendsTodaysBirthday();
     }
+
 
     @GetMapping("/filter/ByDate")
     public List<Friend> getFriendsByDate(
@@ -60,8 +55,10 @@ public class FriendController {
             @RequestParam
             @Past(message = "Date mast be in past")
             LocalDate date) {
+
         return friendService.getFriendsByDate(date);
     }
+
 
     @GetMapping("/filter/ByFullName")
     public List<Friend> getFriendsByFullName(@RequestParam String fullName) {

@@ -1,14 +1,11 @@
 package exchange.myfriendsbirthdays.service;
 
-import exchange.myfriendsbirthdays.dto.FriendDTO;
+import exchange.myfriendsbirthdays.extension.NotFoundException;
 import exchange.myfriendsbirthdays.model.entity.Friend;
-//import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 @RequiredArgsConstructor
 @Service
@@ -42,6 +39,11 @@ public class FriendServiceImpl implements FriendService {
         List<Friend> todayFriends = friends.stream()
                 .filter(this::isBirthdayToday).toList();
         System.out.println(todayFriends);
+
+        if (todayFriends.isEmpty()) {
+            throw new NotFoundException("Today Birthdays not found");
+        }
+
         return todayFriends;
     }
 
@@ -50,6 +52,9 @@ public class FriendServiceImpl implements FriendService {
         List<Friend> todayFriends = friends.stream()
                 .filter(friend -> friend.getBirthDay().equals(date)).toList();
         System.out.println(todayFriends);
+        if (todayFriends.isEmpty()) {
+            throw new NotFoundException("Friends by date not found");
+        }
         return todayFriends;
     }
 
@@ -58,10 +63,15 @@ public class FriendServiceImpl implements FriendService {
         String[] splitName = fullName.split(" ");
         String firstName = splitName[0];
         String lastName = splitName[1];
-        List<Friend> todayFriends = friends.stream()
+        List<Friend> resultFriends = friends.stream()
                 .filter(friend -> isEqualsFullName(friend, firstName,lastName)).toList();
-        System.out.println(todayFriends);
-        return todayFriends;
+        System.out.println(resultFriends);
+
+        if (resultFriends.isEmpty()) {
+            throw new NotFoundException("Friends by full name not found");
+        }
+
+        return resultFriends;
     }
 
     private boolean isEqualsFullName(Friend friend, String firstName, String lastName) {

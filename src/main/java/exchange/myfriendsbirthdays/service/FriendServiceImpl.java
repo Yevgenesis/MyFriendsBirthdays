@@ -19,6 +19,7 @@ public class FriendServiceImpl implements FriendService {
         for (Friend friend : friendList) {
             addFriend(friend);
         }
+
         return friends;
     }
 
@@ -39,7 +40,6 @@ public class FriendServiceImpl implements FriendService {
         List<Friend> todayFriends = friends.stream()
                 .filter(this::isBirthdayToday).toList();
         System.out.println(todayFriends);
-
         if (todayFriends.isEmpty()) {
             throw new NotFoundException("Today Birthdays not found");
         }
@@ -55,18 +55,15 @@ public class FriendServiceImpl implements FriendService {
         if (todayFriends.isEmpty()) {
             throw new NotFoundException("Friends by date not found");
         }
+
         return todayFriends;
     }
 
     @Override
     public List<Friend> getFriendsByFullName(String fullName) {
-        String[] splitName = fullName.split(" ");
-        String firstName = splitName[0];
-        String lastName = splitName[1];
         List<Friend> resultFriends = friends.stream()
-                .filter(friend -> isEqualsFullName(friend, firstName,lastName)).toList();
+                .filter(friend -> isEqualsFullName(friend, fullName)).toList();
         System.out.println(resultFriends);
-
         if (resultFriends.isEmpty()) {
             throw new NotFoundException("Friends by full name not found");
         }
@@ -74,7 +71,10 @@ public class FriendServiceImpl implements FriendService {
         return resultFriends;
     }
 
-    private boolean isEqualsFullName(Friend friend, String firstName, String lastName) {
+    private boolean isEqualsFullName(Friend friend, String fullName) {
+        String[] splitName = fullName.split(" ");
+        String firstName = splitName[0];
+        String lastName = splitName[1];
         return friend.getFirstName().equals(firstName) && friend.getLastName().equals(lastName);
     }
 

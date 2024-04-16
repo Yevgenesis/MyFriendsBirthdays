@@ -5,8 +5,9 @@ import exchange.myfriendsbirthdays.mapper.FriendMapper;
 import exchange.myfriendsbirthdays.model.entity.Friend;
 import exchange.myfriendsbirthdays.service.FriendService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.Past;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
 
+@Slf4j
 @Validated
 @RestController
 @RequiredArgsConstructor
@@ -40,7 +42,7 @@ public class FriendController {
     @PostMapping
     public Friend createFriend(@RequestBody @Valid FriendDTO friendDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            System.out.println(bindingResult.getAllErrors());
+            log.info(bindingResult.getAllErrors().toString());
         }
         Friend newFriend = friendMapper.dtoTofriend(friendDTO);
         return friendService.addFriend(newFriend);
@@ -53,7 +55,11 @@ public class FriendController {
     }
 
     @GetMapping("/filter/ByDate")
-    public List<Friend> getFriendsByDate(@RequestParam @PastOrPresent LocalDate date) {
+    public List<Friend> getFriendsByDate(
+            @Valid
+            @RequestParam
+            @Past(message = "Date mast be in past")
+            LocalDate date) {
         return friendService.getFriendsByDate(date);
     }
 
